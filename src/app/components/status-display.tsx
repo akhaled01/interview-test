@@ -7,15 +7,16 @@ import { useEffect, useState } from "react";
 
 interface StatusDisplayProps {
   updates: Map<string, AgentUpdate>;
+  startTime: number | null;
 }
 
-export const StatusDisplay = ({ updates }: StatusDisplayProps) => {
+export const StatusDisplay = ({ updates, startTime }: StatusDisplayProps) => {
   const [currentTime, setCurrentTime] = useState(Date.now());
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(Date.now());
-    }, 1000);
+    }, 100); // Update every 100ms to make the timer smoother
 
     return () => clearInterval(interval);
   }, []);
@@ -25,18 +26,20 @@ export const StatusDisplay = ({ updates }: StatusDisplayProps) => {
       <CardContent className="flex flex-col gap-1">
         {[...updates.entries()].map(([key, update]) => {
           const isRunning = update.event_status === "running";
-          const duration = isRunning
-            ? Math.floor(
-                (currentTime - Math.max(update.startTime, currentTime)) / 1000
-              )
-            : Math.floor(update.duration);
+          let duration;
+
+          if (isRunning && startTime) {
+            duration = (currentTime - startTime - update.startTime) / 1000;
+          } else {
+            duration = update.duration / 1000;
+          }
 
           return (
             <UpdateRecord
               key={key}
               update={{
                 ...update,
-                duration,
+                duration: Math.max(0, duration), // Ensure duration is never negative
               }}
             />
           );
@@ -45,4 +48,3 @@ export const StatusDisplay = ({ updates }: StatusDisplayProps) => {
     </Card>
   );
 };
-

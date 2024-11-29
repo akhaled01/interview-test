@@ -6,9 +6,15 @@ export const UpdateRecord = ({ update }: { update: AgentUpdate }) => (
   <div className="flex items-center justify-between border-t py-3 first:border-t-0">
     <div className="flex items-center gap-2">
       {update.event_status === "running" ? (
-        <Loader2 className="h-5 w-5 duration-300 animate-spin text-blue-500" />
+        <Loader2
+          className="h-5 w-5 duration-300 animate-spin text-blue-500"
+          aria-label="Task in progress"
+        />
       ) : (
-        <div className="rounded-full bg-emerald-500/15 p-1">
+        <div
+          className="rounded-full bg-emerald-500/15 p-1"
+          aria-label="Task completed"
+        >
           <Check className="h-3 w-3 text-emerald-500" />
         </div>
       )}
@@ -20,8 +26,10 @@ export const UpdateRecord = ({ update }: { update: AgentUpdate }) => (
       </div>
     </div>
     <div className="flex items-center gap-1 text-sm text-muted-foreground">
-      <Clock className="h-4 w-4" />
-      <span>{update.duration.toFixed(1)}s</span>
+      <Clock className="h-4 w-4" aria-hidden="true" />
+      <span aria-label={`Duration: ${update.duration.toFixed(1)} seconds`}>
+        {update.duration.toFixed(1)}s
+      </span>
     </div>
   </div>
 );
